@@ -1,0 +1,8 @@
+# Installed packages
+.venv/
+
+# Database
+db.sqlite3
+
+# Pycaches
+**/__pycache__/
