@@ -6,3 +6,6 @@ db.sqlite3
 
 # Pycaches
 **/__pycache__/
+
+# My notes
+READ_BEFORE_RELEASE.txt
