@@ -69,3 +69,29 @@ class Orders(models.Model):
     status = models.CharField(max_length=11, choices=OrderStatus.choices)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class Offer(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="offerns")
+    title = models.CharField(max_length=255)
+    file = models.ForeignKey(
+        FileUpload, on_delete=models.SET_NULL, null=True, related_name="offers")
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class OfferDetail(models.Model):
+    class OfferType(models.TextChoices):
+        BASIC = 'basic', 'Basic'
+        STANDARD = 'standard', 'Standard'
+        PREMIUM = 'premium', 'Premium'
+
+    title = models.CharField(max_length=255)
+    revisions = models.PositiveIntegerField()
+    delivery_time_in_days = models.PositiveIntegerField()
+    price = models.DecimalField(decimal_places=2, max_digits=11)
+    features = models.JSONField(default=list)
+    offer_type = models.CharField(max_length=8, choices=OfferType.choices)
+    offer = models.ForeignKey(Offer, on_delete=models.CASCADE)
