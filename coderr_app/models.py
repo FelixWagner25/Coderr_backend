@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class User(AbstractUser):
@@ -30,3 +31,15 @@ class CustomerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     file = models.ForeignKey(
         FileUpload, on_delete=models.SET_NULL, null=True, blank=True)
+
+
+class Review(models.Model):
+    business_user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="business_user")
+    reviewer = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="reviewer")
+    rating = models.PositiveIntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(5)])
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
