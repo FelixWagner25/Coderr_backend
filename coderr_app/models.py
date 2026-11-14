@@ -28,16 +28,17 @@ class BusinessUserProfile(models.Model):
 
 
 class CustomerProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="customer_profile")
     file = models.ForeignKey(
         FileUpload, on_delete=models.SET_NULL, null=True, blank=True)
 
 
 class Review(models.Model):
     business_user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="business_user")
+        User, on_delete=models.CASCADE, related_name="reviews_business_user")
     reviewer = models.ForeignKey(
-        User, on_delete=models.SET_NULL, related_name="reviewer", null=True)
+        User, on_delete=models.SET_NULL, related_name="reviews_customer", null=True)
     rating = models.PositiveIntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(5)])
     description = models.TextField()
@@ -57,9 +58,9 @@ class Orders(models.Model):
         CANCELED = 'cancelled', 'Canceled'
 
     customer = models.ForeignKey(
-        User, on_delete=models.SET_NULL, related_name="customer", null=True)
+        User, on_delete=models.SET_NULL, related_name="orders_customer", null=True)
     business_user = models.ForeignKey(
-        User, on_delete=models.SET_NULL, related_name="business_user", null=True)
+        User, on_delete=models.SET_NULL, related_name="orders_business_user", null=True)
     title = models.CharField(max_length=255)
     revisions = models.PositiveIntegerField()
     delivery_time_in_days = models.PositiveIntegerField()
@@ -73,7 +74,7 @@ class Orders(models.Model):
 
 class Offer(models.Model):
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="offerns")
+        User, on_delete=models.CASCADE, related_name="offers")
     title = models.CharField(max_length=255)
     file = models.ForeignKey(
         FileUpload, on_delete=models.SET_NULL, null=True, related_name="offers")

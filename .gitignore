@@ -9,3 +9,6 @@ db.sqlite3
 
 # My notes
 READ_BEFORE_RELEASE.txt
+
+# Testing Data
+db_fill.py
