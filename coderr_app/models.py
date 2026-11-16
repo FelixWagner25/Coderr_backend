@@ -46,7 +46,7 @@ class Review(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class Orders(models.Model):
+class Order(models.Model):
     class OfferType(models.TextChoices):
         BASIC = 'basic', 'Basic'
         STANDARD = 'standard', 'Standard'
@@ -66,8 +66,10 @@ class Orders(models.Model):
     delivery_time_in_days = models.PositiveIntegerField()
     price = models.DecimalField(decimal_places=2, max_digits=11)
     features = models.JSONField(default=list)
-    offer_type = models.CharField(max_length=8, choices=OfferType.choices)
-    status = models.CharField(max_length=11, choices=OrderStatus.choices)
+    offer_type = models.CharField(
+        max_length=8, choices=OfferType.choices)
+    status = models.CharField(
+        max_length=11, choices=OrderStatus.choices, default=OrderStatus.IN_PROGRESS)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -76,7 +78,7 @@ class Offer(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="offers")
     title = models.CharField(max_length=255)
-    file = models.ForeignKey(
+    image = models.ForeignKey(
         FileUpload, on_delete=models.SET_NULL, null=True, related_name="offers")
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
