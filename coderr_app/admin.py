@@ -7,12 +7,12 @@ class UserAdmin(admin.ModelAdmin):
 
 
 class BusinessUserProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'user__first_name', 'user__last_name', 'file', 'location',
+    list_display = ['user', 'file', 'location',
                     'tel', 'description', 'working_hours']
 
 
 class CustomerProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'user__first_name', 'user__last_name', 'file']
+    list_display = ['user', 'file']
 
 
 class ReviewAdmin(admin.ModelAdmin):
@@ -21,12 +21,12 @@ class ReviewAdmin(admin.ModelAdmin):
 
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['customer', 'business_user', 'title', 'revisions', 'delivery_time_in_days',
+    list_display = ['title', 'customer', 'business_user',  'revisions', 'delivery_time_in_days',
                     'price', 'features', 'offer_type', 'status', 'created_at', 'updated_at']
 
 
 class OfferAdmin(admin.ModelAdmin):
-    list_display = ['user', 'title', 'image', 'created_at', 'updated_at']
+    list_display = ['title', 'user', 'image', 'created_at', 'updated_at']
 
 
 class OfferDetailAdmin(admin.ModelAdmin):

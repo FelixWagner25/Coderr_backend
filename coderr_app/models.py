@@ -10,6 +10,9 @@ class User(AbstractUser):
 
     type = models.CharField(max_length=8, choices=UserType.choices)
 
+    def __str__(self):
+        return f'{self.first_name} {self.last_name} @{self.username}'
+
 
 class FileUpload(models.Model):
     file = models.FileField(upload_to='uploads/')
@@ -26,12 +29,18 @@ class BusinessUserProfile(models.Model):
     description = models.TextField(blank=True)
     working_hours = models.CharField(max_length=63, blank=True)
 
+    def __str__(self):
+        return 'Business User Profile @' + f'{self.user}'
+
 
 class CustomerProfile(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="customer_profile")
     file = models.ForeignKey(
         FileUpload, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return 'Customer Profile @' + f'{self.user}'
 
 
 class Review(models.Model):
@@ -44,6 +53,9 @@ class Review(models.Model):
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return 'Review of' + f'{self.reviewer}' + ' to ' + f'{self.business_user}'
 
 
 class Order(models.Model):
@@ -73,6 +85,9 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return 'Order from ' + f'{self.customer}' + ' to ' + f'{self.business_user}'
+
 
 class Offer(models.Model):
     user = models.ForeignKey(
@@ -83,6 +98,9 @@ class Offer(models.Model):
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.title}'
 
 
 class OfferDetail(models.Model):
@@ -98,3 +116,6 @@ class OfferDetail(models.Model):
     features = models.JSONField(default=list)
     offer_type = models.CharField(max_length=8, choices=OfferType.choices)
     offer = models.ForeignKey(Offer, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.title}'
