@@ -12,3 +12,6 @@ READ_BEFORE_RELEASE.txt
 
 # Testing Data
 db_fill.py
+
+# User media
+media/

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import BusinessUserProfile, CustomerProfile, Offer, OfferDetail, Order, Review, User
+from .models import BusinessUserProfile, CustomerProfile, FileUpload, Offer, OfferDetail, Order, Review, User
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -41,3 +41,4 @@ admin.site.register(Review, ReviewAdmin)
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Offer, OfferAdmin)
 admin.site.register(OfferDetail, OfferDetailAdmin)
+admin.site.register(FileUpload)
