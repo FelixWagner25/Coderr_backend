@@ -6,7 +6,6 @@ from rest_framework.authtoken.models import Token
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     repeated_password = serializers.CharField(write_only=True)
-    type = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
@@ -18,9 +17,13 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {"password": "Entered passwords do not match."})
 
+        if User.objects.filter(username__iexact=data['username']).exists():
+            raise serializers.ValidationError(
+                {'username': 'Username is already used.'})
+
         if User.objects.filter(email__iexact=data['email']).exists():
             raise serializers.ValidationError(
-                {"email": "Entered email is already used."}
+                {'email': 'Email is already used.'}
             )
 
         return data

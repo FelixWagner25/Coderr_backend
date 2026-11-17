@@ -19,14 +19,27 @@ class RegistrationTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data, expected_data)
 
-    def test_user_registration_400(self):
-        pass
+    def test_user_registration_wrong_pwd_400(self):
+        data = {'username': 'testRegistrationUser', 'email': 'testemail@testuser.de',
+                'password': 'asdasd', 'repeated_password': 'jkljkl', 'type': 'customer'}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_user_registration_invalid_type_400(self):
-        pass
+        data = {'username': 'testRegistrationUser', 'email': 'testemail@testuser.de',
+                'password': 'asdasd', 'repeated_password': 'asdasd', 'type': 'smith'}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_user_registration_repeated_400(self):
-        pass
+        data = {'username': 'testRegistrationUser', 'email': 'testemail@testuser.de',
+                'password': 'asdasd', 'repeated_password': 'asdasd', 'type': 'customer'}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        data = {'username': 'testRegistrationUser', 'email': 'testemail@testuser.de',
+                'password': 'asdasd', 'repeated_password': 'asdasd', 'type': 'customer'}
+        response = self.client.post(self.url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
 class LoginTests(APITestCase):
