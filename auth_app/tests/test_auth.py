@@ -3,13 +3,12 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 from rest_framework.authtoken.models import Token
 from coderr_app.models import User
-from ..api.serializers import UserLoginSerializer
 
 
 class LoginTests(APITestCase):
     def setUp(self):
         self.testUser = User.objects.create_user(
-            username='testUser', password='asdasd')
+            username='testUser', password='asdasd', email="testmail@testuser.de")
         self.token = Token.objects.create(user=self.testUser)
         self.client = APIClient()
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
@@ -19,7 +18,10 @@ class LoginTests(APITestCase):
         data = {'username': 'testUser',
                 'password': 'asdasd'}
         response = self.client.post(url, data, format='json')
-        expected_data = UserLoginSerializer(self.testUser).data
+        self.testUser = User.objects.get(username='testUser')
+        self.token = Token.objects.get(user=self.testUser)
+        expected_data = {'token': self.token.key,
+                         'username': self.testUser.username, 'email': self.testUser.email, 'user_id': self.testUser.id}
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected_data)
