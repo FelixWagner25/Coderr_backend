@@ -3,7 +3,22 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import status
-from .serializers import UserLoginSerializer
+from .serializers import UserLoginSerializer, UserRegistrationSerializer
+
+
+class RegistrationView(APIView):
+    """Registers a new user and returns the user token."""
+
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        """Creates the user and returns user data as JSON."""
+        serializer = UserRegistrationSerializer(data=request.data)
+        if serializer.is_valid():
+            new_user = serializer.save()
+            new_user_token = Token.objects.get(user=new_user).key
+            return Response({"token": new_user_token, "username": new_user.username, "email": new_user.email, "user_id": new_user.id}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):
