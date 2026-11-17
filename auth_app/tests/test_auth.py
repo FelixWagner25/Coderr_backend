@@ -1,6 +1,7 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
+from rest_framework.authtoken.models import Token
 from coderr_app.models import User
 from ..api.serializers import UserLoginSerializer
 
@@ -9,6 +10,9 @@ class LoginTests(APITestCase):
     def setUp(self):
         self.testUser = User.objects.create_user(
             username='testUser', password='asdasd')
+        self.token = Token.objects.create(user=self.testUser)
+        self.client = APIClient()
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
 
     def test_user_login_200(self):
         url = reverse('login')
