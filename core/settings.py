@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework.authtoken',
     'auth_app',
     'coderr_app',
 ]
@@ -133,3 +135,10 @@ MAILERS = {
 }
 
 AUTH_USER_MODEL = "coderr_app.User"
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
