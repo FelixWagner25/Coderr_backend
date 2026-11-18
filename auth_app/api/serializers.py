@@ -4,6 +4,8 @@ from rest_framework.authtoken.models import Token
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
+    """Validates and converts registration request data to python applicable data. Creates new user with validated data and an authentication token."""
+
     password = serializers.CharField(write_only=True)
     repeated_password = serializers.CharField(write_only=True)
 
@@ -13,22 +15,20 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
                   'password', 'repeated_password', 'type']
 
     def validate(self, data):
+        """Validates congruency of entered passwords and if username or email are free."""
         if data['password'] != data['repeated_password']:
             raise serializers.ValidationError(
-                {"password": "Entered passwords do not match."})
-
+                {'password': 'Entered passwords do not match.'})
         if User.objects.filter(username__iexact=data['username']).exists():
             raise serializers.ValidationError(
                 {'username': 'Username is already used.'})
-
         if User.objects.filter(email__iexact=data['email']).exists():
             raise serializers.ValidationError(
-                {'email': 'Email is already used.'}
-            )
-
+                {'email': 'Email is already used.'})
         return data
 
     def create(self, validated_data):
+        """Creates new user and its authentication token."""
         validated_data.pop('repeated_password')
         user = User.objects.create_user(
             username=validated_data['username'],
@@ -41,10 +41,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 class UserLoginSerializer(serializers.Serializer):
+    """Validates and converts login request data to python applicable data."""
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
+        """Validates user login request data."""
         error_msg = 'Login data is invalid.'
 
         if not User.objects.filter(username__iexact=data['username']).exists():
