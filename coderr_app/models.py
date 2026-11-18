@@ -58,37 +58,6 @@ class Review(models.Model):
         return 'Review of' + f'{self.reviewer}' + ' to ' + f'{self.business_user}'
 
 
-class Order(models.Model):
-    class OfferType(models.TextChoices):
-        BASIC = 'basic', 'Basic'
-        STANDARD = 'standard', 'Standard'
-        PREMIUM = 'premium', 'Premium'
-
-    class OrderStatus(models.TextChoices):
-        IN_PROGRESS = 'in_progress', 'In Progress'
-        COMPLETED = 'completed', 'Completed'
-        CANCELED = 'cancelled', 'Canceled'
-
-    customer = models.ForeignKey(
-        User, on_delete=models.SET_NULL, related_name="orders_customer", null=True)
-    business_user = models.ForeignKey(
-        User, on_delete=models.SET_NULL, related_name="orders_business_user", null=True)
-    title = models.CharField(max_length=255)
-    revisions = models.PositiveIntegerField()
-    delivery_time_in_days = models.PositiveIntegerField()
-    price = models.DecimalField(decimal_places=2, max_digits=11)
-    features = models.JSONField(default=list)
-    offer_type = models.CharField(
-        max_length=8, choices=OfferType.choices)
-    status = models.CharField(
-        max_length=11, choices=OrderStatus.choices, default=OrderStatus.IN_PROGRESS)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return 'Order from ' + f'{self.customer}' + ' to ' + f'{self.business_user}'
-
-
 class Offer(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="offers")
@@ -119,3 +88,35 @@ class OfferDetail(models.Model):
 
     def __str__(self):
         return f'{self.title}'
+
+
+class Order(models.Model):
+    class OfferType(models.TextChoices):
+        BASIC = 'basic', 'Basic'
+        STANDARD = 'standard', 'Standard'
+        PREMIUM = 'premium', 'Premium'
+
+    class OrderStatus(models.TextChoices):
+        IN_PROGRESS = 'in_progress', 'In Progress'
+        COMPLETED = 'completed', 'Completed'
+        CANCELED = 'cancelled', 'Canceled'
+
+    customer = models.ForeignKey(
+        User, on_delete=models.SET_NULL, related_name="orders_customer", null=True)
+    business_user = models.ForeignKey(
+        User, on_delete=models.SET_NULL, related_name="orders_business_user", null=True)
+    title = models.CharField(max_length=255)
+    revisions = models.PositiveIntegerField()
+    delivery_time_in_days = models.PositiveIntegerField()
+    price = models.DecimalField(decimal_places=2, max_digits=11)
+    features = models.JSONField(default=list)
+    offer = models.ForeignKey(Offer, on_delete=models.SET_NULL, null=True)
+    offer_type = models.CharField(
+        max_length=8, choices=OfferType.choices)
+    status = models.CharField(
+        max_length=11, choices=OrderStatus.choices, default=OrderStatus.IN_PROGRESS)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return 'Order from ' + f'{self.customer}' + ' to ' + f'{self.business_user}'
