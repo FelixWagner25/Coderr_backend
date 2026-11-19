@@ -110,7 +110,6 @@ class Order(models.Model):
     delivery_time_in_days = models.PositiveIntegerField()
     price = models.DecimalField(decimal_places=2, max_digits=11)
     features = models.JSONField(default=list)
-    offer = models.ForeignKey(Offer, on_delete=models.SET_NULL, null=True)
     offer_type = models.CharField(
         max_length=8, choices=OfferType.choices)
     status = models.CharField(
