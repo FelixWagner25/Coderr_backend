@@ -45,3 +45,30 @@ class OrderListCreateTest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data.keys(), expected_data.keys())
+
+    def test_create_order_400(self):
+        response = self.client.post(
+            self.url, data={'offer_detail_id': 'x'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_order_401(self):
+        self.client.logout()
+        response = self.client.post(
+            self.url, data={'offer_detail_id': self.offer_detail_basic.id})
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_create_order_403(self):
+        self.client.logout()
+        self.business_user_token = Token.objects.create(
+            user=self.business_user)
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + self.business_user_token.key)
+        response = self.client.post(
+            self.url, data={'offer_detail_id': self.offer_detail_basic.id})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_create_order_404(self):
+        not_found_id = self.offer_detail_basic.id + 2
+        response = self.client.post(
+            self.url, data={'offer_detail_id': not_found_id})
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

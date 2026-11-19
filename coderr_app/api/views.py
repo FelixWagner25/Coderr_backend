@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from coderr_app.models import OfferDetail, Order
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
@@ -14,7 +15,7 @@ class OrderListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         offer_detail_id = serializer.validated_data['offer_detail_id']
-        offer_detail = OfferDetail.objects.get(id=offer_detail_id)
+        offer_detail = get_object_or_404(OfferDetail, id=offer_detail_id)
         serializer.save(customer=self.request.user, business_user=offer_detail.offer.user, title=offer_detail.title, revisions=offer_detail.revisions,
                         delivery_time_in_days=offer_detail.delivery_time_in_days, price=offer_detail.price, features=offer_detail.features, offer_type=offer_detail.offer_type)
 
