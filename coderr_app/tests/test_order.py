@@ -28,7 +28,7 @@ class OrderListCreateTest(APITestCase):
 
     def test_list_get_order_200(self):
         response = self.client.get(self.url)
-        expected_data = OrderSerializer(self.order).data
+        expected_data = [OrderSerializer(self.order).data]
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected_data)
