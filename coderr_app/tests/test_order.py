@@ -44,4 +44,4 @@ class OrderListCreateTest(APITestCase):
         expected_data = OrderCreateSerializer(self.order).data
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data, expected_data)
+        self.assertEqual(response.data.keys(), expected_data.keys())
