@@ -1,6 +1,9 @@
 # Installed packages
 .venv/
 
+# vscode settings
+.vscode/
+
 # Database
 db.sqlite3
 
@@ -15,3 +18,4 @@ db_fill.py
 
 # User media
 media/
+
