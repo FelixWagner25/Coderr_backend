@@ -46,7 +46,7 @@ class OrderDetailView(generics.UpdateAPIView):
 
 
 class OrderCountView(APIView):
-    permission_classes = [IsAuthenticated, IsUserTypeBusinessUser]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, business_user_id):
         user = get_object_or_404(User, id=business_user_id)
@@ -57,4 +57,11 @@ class OrderCountView(APIView):
 
 
 class OrderCompletedCountView(generics.ListAPIView):
-    pass
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, business_user_id):
+        user = get_object_or_404(User, id=business_user_id)
+
+        completed_order_count = Order.objects.filter(Q(status=Order.OrderStatus.COMPLETED) & Q(
+            business_user=user)).count()
+        return Response({'completed_order_count': completed_order_count})
