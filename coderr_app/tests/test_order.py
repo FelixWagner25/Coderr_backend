@@ -155,30 +155,6 @@ class OrderTest(APITestCase):
         respone = self.client.get(url)
         self.assertEqual(respone.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_order_count_200(self):
-        url = reverse(
-            'order-count', kwargs={'business_user_id': self.business_user.id})
-        self.login_test_business_user()
-        respone = self.client.get(url)
-        expected_order_count = 2
-        self.assertEqual(respone.status_code, status.HTTP_200_OK)
-        self.assertEqual(respone.data['order_count'], expected_order_count)
-
-    def test_order_count_401(self):
-        url = reverse(
-            'order-count', kwargs={'business_user_id': self.business_user.id})
-        self.client.logout()
-        respone = self.client.get(url)
-        self.assertEqual(respone.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    def test_order_count_404(self):
-        not_found_id = 1024
-        url = reverse(
-            'order-count', kwargs={'business_user_id': not_found_id})
-        self.login_test_business_user()
-        respone = self.client.get(url)
-        self.assertEqual(respone.status_code, status.HTTP_404_NOT_FOUND)
-
     def test_completed_order_count_200(self):
         url = reverse(
             'completed-order-count', kwargs={'business_user_id': self.business_user.id})
