@@ -3,10 +3,10 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 from rest_framework.authtoken.models import Token
 from coderr_app.models import FileUpload, Offer, OfferDetail, Order, User
-from ..api.serializers import OrderCreateSerializer, OrderListSerializer
+from ..api.serializers import OrderCreateSerializer, OrderListSerializer, OrderUpdateSerializer
 
 
-class OrderListCreateTest(APITestCase):
+class OrderTest(APITestCase):
     url = reverse('order-list')
 
     def setUp(self):
@@ -72,3 +72,17 @@ class OrderListCreateTest(APITestCase):
         response = self.client.post(
             self.url, data={'offer_detail_id': not_found_id})
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_order_200(self):
+        self.url = reverse('order-detail', kwargs={'id': self.order.id})
+        self.client.logout()
+        self.business_user_token = Token.objects.create(
+            user=self.business_user)
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + self.business_user_token.key)
+        response = self.client.patch(
+            self.url, data={'status': Order.OrderStatus.COMPLETED})
+        expected_data = OrderUpdateSerializer(self.order).data
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.keys(), expected_data.keys())

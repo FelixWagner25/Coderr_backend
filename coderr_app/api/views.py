@@ -3,8 +3,8 @@ from django.shortcuts import get_object_or_404
 from coderr_app.models import OfferDetail, Order
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from .serializers import OrderCreateSerializer, OrderListSerializer
-from .permissions import UserIsCustomer
+from .serializers import OrderCreateSerializer, OrderUpdateSerializer, OrderListSerializer
+from .permissions import IsOrderBusinessUser, IsUserTypeCustomer, IsUserTypeBusinessUser
 
 
 class OrderListCreateView(generics.ListCreateAPIView):
@@ -29,12 +29,18 @@ class OrderListCreateView(generics.ListCreateAPIView):
         if self.request.method == 'GET':
             permission_classes = [IsAuthenticated]
         elif self.request.method == 'POST':
-            permission_classes = [IsAuthenticated, UserIsCustomer]
+            permission_classes = [IsAuthenticated, IsUserTypeCustomer]
+        else:
+            permission_classes = self.permission_classes
         return [permission() for permission in permission_classes]
 
 
 class OrderDetailView(generics.UpdateAPIView):
-    pass
+    queryset = Order.objects.all()
+    lookup_url_kwarg = 'id'
+    serializer_class = OrderUpdateSerializer
+    permission_classes = [IsAuthenticated,
+                          IsUserTypeBusinessUser, IsOrderBusinessUser]
 
 
 class OrderCountView(generics.ListAPIView):
