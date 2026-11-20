@@ -1,6 +1,6 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
-from coderr_app.models import OfferDetail, Order
+from coderr_app.models import OfferDetail, Order, User
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -49,9 +49,10 @@ class OrderCountView(APIView):
     permission_classes = [IsAuthenticated, IsUserTypeBusinessUser]
 
     def get(self, request, business_user_id):
-        business_user_id = business_user_id
+        user = get_object_or_404(User, id=business_user_id)
+
         order_count = Order.objects.filter(Q(status=Order.OrderStatus.IN_PROGRESS) & Q(
-            business_user=business_user_id)).count()
+            business_user=user)).count()
         return Response({'order_count': order_count})
 
 
