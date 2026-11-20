@@ -26,6 +26,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
 
 
 class OrderUpdateSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Order
         fields = ['id', 'customer', 'business_user', 'title', 'revisions', 'delivery_time_in_days',

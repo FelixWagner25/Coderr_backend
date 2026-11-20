@@ -19,6 +19,10 @@ class OrderTest(APITestCase):
                                                              'Feat1, Feat2'], offer_type=OfferDetail.OfferType.BASIC, offer=self.offer)
         self.order = Order.objects.create(customer=self.customer_user, business_user=self.business_user, title='Test Order', revisions=2, delivery_time_in_days=5, price=100.0, features=[
                                           'Feat1, Feat2'], offer_type=OfferDetail.OfferType.BASIC, status=Order.OrderStatus.IN_PROGRESS)
+        self.order2 = Order.objects.create(customer=self.customer_user, business_user=self.business_user, title='Test Order 2', revisions=2, delivery_time_in_days=5, price=100.0, features=[
+            'Feat1, Feat2'], offer_type=OfferDetail.OfferType.BASIC, status=Order.OrderStatus.IN_PROGRESS)
+        self.order3 = Order.objects.create(customer=self.customer_user, business_user=self.business_user, title='Test Order 3', revisions=2, delivery_time_in_days=5, price=100.0, features=[
+            'Feat1, Feat2'], offer_type=OfferDetail.OfferType.BASIC, status=Order.OrderStatus.COMPLETED)
         self.client = APIClient()
 
     def login_test_customer(self):
@@ -38,10 +42,10 @@ class OrderTest(APITestCase):
         url = reverse('order-list')
         self.login_test_customer()
         response = self.client.get(url)
-        expected_data = [OrderListSerializer(self.order).data]
+        expected_data = OrderListSerializer(self.order).data
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, expected_data)
+        self.assertEqual(response.data[0], expected_data)
 
     def test_list_get_order_logged_out_401(self):
         url = reverse('order-list')
@@ -126,3 +130,12 @@ class OrderTest(APITestCase):
         response = self.client.patch(
             url, data={'status': Order.OrderStatus.COMPLETED})
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_order_count_200(self):
+        url = reverse(
+            'order-count', kwargs={'business_user_id': self.business_user.id})
+        self.login_test_business_user()
+        respone = self.client.get(url)
+        expected_order_count = 2
+        self.assertEqual(respone.status_code, status.HTTP_200_OK)
+        self.assertEqual(respone.data['order_count'], expected_order_count)

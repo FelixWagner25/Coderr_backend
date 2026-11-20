@@ -2,7 +2,9 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from coderr_app.models import OfferDetail, Order
 from rest_framework import generics
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from .serializers import OrderCreateSerializer, OrderUpdateSerializer, OrderListSerializer
 from .permissions import IsOrderBusinessUser, IsUserTypeCustomer, IsUserTypeBusinessUser
 
@@ -43,8 +45,14 @@ class OrderDetailView(generics.UpdateAPIView):
                           IsUserTypeBusinessUser, IsOrderBusinessUser]
 
 
-class OrderCountView(generics.ListAPIView):
-    pass
+class OrderCountView(APIView):
+    permission_classes = [IsAuthenticated, IsUserTypeBusinessUser]
+
+    def get(self, request, business_user_id):
+        business_user_id = business_user_id
+        order_count = Order.objects.filter(Q(status=Order.OrderStatus.IN_PROGRESS) & Q(
+            business_user=business_user_id)).count()
+        return Response({'order_count': order_count})
 
 
 class OrderCompletedCountView(generics.ListAPIView):
