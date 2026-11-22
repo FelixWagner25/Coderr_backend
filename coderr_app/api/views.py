@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from ..models import Review
 from .serializers import OrderCreateSerializer, OrderUpdateSerializer, OrderListSerializer, ReviewSerializer
-from .permissions import IsOrderBusinessUser, IsUserTypeCustomer, IsUserTypeBusinessUser
+from .permissions import DenyAll, IsOrderBusinessUser, IsReviewer, IsUserTypeCustomer, IsUserTypeBusinessUser
 
 
 class OrderListCreateView(generics.ListCreateAPIView):
@@ -35,7 +35,7 @@ class OrderListCreateView(generics.ListCreateAPIView):
         elif self.request.method == 'POST':
             permission_classes = [IsAuthenticated, IsUserTypeCustomer]
         else:
-            permission_classes = self.permission_classes
+            permission_classes = [DenyAll]
         return [permission() for permission in permission_classes]
 
 
@@ -71,7 +71,6 @@ class OrderCompletedCountView(generics.ListAPIView):
 
 class ReviewViewSet(viewsets.ViewSet):
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         queryset = Review.objects.all()
@@ -81,4 +80,19 @@ class ReviewViewSet(viewsets.ViewSet):
         if business_user_param is not None:
             queryset = queryset.filter(business_user=business_user_param)
 
+        reviewer_param = self.request.query_params.get('reviewer_id', None)
+        if reviewer_param is not None:
+            queryset = queryset.filter(reviewer=reviewer_param)
+
         return queryset
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            permission_classes = [IsAuthenticated]
+        elif self.action == 'create':
+            permission_classes = [IsAuthenticated, IsUserTypeCustomer]
+        elif self.action in ['update', 'partial_update', 'destroy']:
+            permission_classes = [IsAuthenticated, IsReviewer]
+        else:
+            permission_classes = [DenyAll]
+        return [permission() for permission in permission_classes]

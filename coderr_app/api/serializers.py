@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from coderr_app.models import Order
+from coderr_app.models import Order, Review
 
 
 class OrderListSerializer(serializers.ModelSerializer):
@@ -33,3 +33,14 @@ class OrderUpdateSerializer(serializers.ModelSerializer):
                   'price', 'features', 'offer_type', 'status', 'created_at', 'updated_at']
         read_only_fields = ['id', 'customer', 'business_user', 'title', 'revisions', 'delivery_time_in_days',
                             'price', 'features', 'offer_type', 'created_at', 'updated_at']
+
+
+class ReviewSerializer(serializers.ModelField):
+
+    class Meta:
+        model = Review
+        fields = ['id', 'business_user', 'reviewer', 'rating',
+                  'description', 'created_at', 'updated_at']
+        read_only_fields = ['reviewer', 'created_at', 'updated_at']
+
+    # Validation whether customer has already a review for business_user is required
