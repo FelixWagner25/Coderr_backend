@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 from rest_framework.authtoken.models import Token
 from ..models import Review, User
+from ..api.serializers import ReviewSerializer
 
 
 class ReviewTest(APITestCase):
@@ -33,4 +34,13 @@ class ReviewTest(APITestCase):
         url = reverse('review-list')
         self.login_test_user(self.customer_user_1)
         response = self.client.get(url)
+        expected_data = [ReviewSerializer(self.review_1).data, ReviewSerializer(
+            self.review_2).data, ReviewSerializer(self.review_3).data]
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, expected_data)
+
+    def test_list_reviews_all_401(self):
+        self.client.logout()
+        url = reverse('review-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
