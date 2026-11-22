@@ -2,10 +2,12 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from coderr_app.models import OfferDetail, Order, User
 from rest_framework import generics
+from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .serializers import OrderCreateSerializer, OrderUpdateSerializer, OrderListSerializer
+from ..models import Review
+from .serializers import OrderCreateSerializer, OrderUpdateSerializer, OrderListSerializer, ReviewSerializer
 from .permissions import IsOrderBusinessUser, IsUserTypeCustomer, IsUserTypeBusinessUser
 
 
@@ -65,3 +67,18 @@ class OrderCompletedCountView(generics.ListAPIView):
         completed_order_count = Order.objects.filter(Q(status=Order.OrderStatus.COMPLETED) & Q(
             business_user=user)).count()
         return Response({'completed_order_count': completed_order_count})
+
+
+class ReviewViewSet(viewsets.ViewSet):
+    serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = Review.objects.all()
+
+        business_user_param = self.request.query_params.get(
+            'business_user_id', None)
+        if business_user_param is not None:
+            queryset = queryset.filter(business_user=business_user_param)
+
+        return queryset
