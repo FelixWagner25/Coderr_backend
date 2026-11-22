@@ -35,7 +35,7 @@ class OrderUpdateSerializer(serializers.ModelSerializer):
                             'price', 'features', 'offer_type', 'created_at', 'updated_at']
 
 
-class ReviewSerializer(serializers.ModelField):
+class ReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review

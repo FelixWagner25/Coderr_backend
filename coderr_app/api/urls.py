@@ -12,5 +12,5 @@ urlpatterns = [
          OrderCountView.as_view(), name='order-count'),
     path('completed-order-count/<int:business_user_id>/',
          OrderCompletedCountView.as_view(), name='completed-order-count'),
-    path('', include(router.urls))
+    path('', include(router.urls)),
 ]

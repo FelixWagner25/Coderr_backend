@@ -69,7 +69,7 @@ class OrderCompletedCountView(generics.ListAPIView):
         return Response({'completed_order_count': completed_order_count})
 
 
-class ReviewViewSet(viewsets.ViewSet):
+class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
 
     def get_queryset(self):
