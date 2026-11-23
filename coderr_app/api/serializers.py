@@ -43,4 +43,5 @@ class ReviewSerializer(serializers.ModelSerializer):
                   'description', 'created_at', 'updated_at']
         read_only_fields = ['reviewer', 'created_at', 'updated_at']
 
-    # Validation whether customer has already a review for business_user is required
+    # Check for valid buisness_user_id and if unvalid throw 400
+    # Check whether customer already reviewed business, if yes throw 403

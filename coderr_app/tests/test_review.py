@@ -44,3 +44,33 @@ class ReviewTest(APITestCase):
         url = reverse('review-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_create_review_201(self):
+        url = reverse('review-list')
+        self.login_test_user(self.customer_user_1)
+        response = self.client.post(
+            url, data={'business_user': 2, 'rating': 4, 'description': 'Schön'})
+        expected_data = ReviewSerializer(self.review_1).data
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data.keys(), expected_data.keys())
+
+    def test_create_review_missing_data_400(self):
+        url = reverse('review-list')
+        self.login_test_user(self.customer_user_1)
+        response = self.client.post(
+            url, data={'business_user': 2, 'description': 'Schön'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_review_401(self):
+        url = reverse('review-list')
+        self.client.logout()
+        response = self.client.post(
+            url, data={'business_user': 2, 'rating': 4, 'description': 'Schön'})
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_create_review_no_customer(self):
+        url = reverse('review-list')
+        self.login_test_user(self.business_user_1)
+        response = self.client.post(
+            url, data={'business_user': 4, 'rating': 4, 'description': 'Schön'})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
