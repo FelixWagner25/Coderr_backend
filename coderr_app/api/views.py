@@ -1,7 +1,7 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from coderr_app.models import OfferDetail, Order, User
-from rest_framework import generics, mixins, viewsets
+from rest_framework import filters, generics, mixins, viewsets
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -70,6 +70,9 @@ class OrderCompletedCountView(generics.ListAPIView):
 
 class ReviewViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
     lookup_url_kwarg = 'id'
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['updated_at', 'rating']
+    ordering = ['updated_at']
 
     def get_queryset(self):
         queryset = Review.objects.all()

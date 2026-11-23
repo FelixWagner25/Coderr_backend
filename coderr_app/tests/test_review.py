@@ -66,6 +66,33 @@ class ReviewTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected_data)
 
+    def test_list_ordering_updated_at_200(self):
+        url = reverse('review-list')
+        self.login_test_user(self.customer_user_1)
+        response = self.client.get(url, {'ordering': 'updated_at'})
+        expected_data = [ReviewListCreateSerializer(self.review_1).data, ReviewListCreateSerializer(
+            self.review_2).data, ReviewListCreateSerializer(self.review_3).data]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, expected_data)
+
+    def test_list_ordering_rating_200(self):
+        url = reverse('review-list')
+        self.login_test_user(self.customer_user_1)
+        response = self.client.get(url, {'ordering': '-rating'})
+        expected_data = [ReviewListCreateSerializer(self.review_1).data, ReviewListCreateSerializer(
+            self.review_2).data, ReviewListCreateSerializer(self.review_3).data]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, expected_data)
+
+    def test_list_ordering_rating_reverse_200(self):
+        url = reverse('review-list')
+        self.login_test_user(self.customer_user_1)
+        response = self.client.get(url, {'ordering': 'rating'})
+        expected_data = [ReviewListCreateSerializer(self.review_3).data, ReviewListCreateSerializer(
+            self.review_2).data, ReviewListCreateSerializer(self.review_1).data]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, expected_data)
+
     def test_create_201(self):
         url = reverse('review-list')
         self.login_test_user(self.customer_user_1)
