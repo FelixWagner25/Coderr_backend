@@ -30,7 +30,7 @@ class ReviewTest(APITestCase):
         self.token, created = Token.objects.get_or_create(user=test_user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
 
-    def test_list_reviews_all_200(self):
+    def test_list_all_200(self):
         url = reverse('review-list')
         self.login_test_user(self.customer_user_1)
         response = self.client.get(url)
@@ -39,13 +39,13 @@ class ReviewTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected_data)
 
-    def test_list_reviews_all_401(self):
+    def test_list_all_401(self):
         self.client.logout()
         url = reverse('review-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_create_review_201(self):
+    def test_create_201(self):
         url = reverse('review-list')
         self.login_test_user(self.customer_user_1)
         response = self.client.post(
@@ -54,21 +54,21 @@ class ReviewTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data.keys(), expected_data.keys())
 
-    def test_create_review_missing_data_400(self):
+    def test_create_missing_data_400(self):
         url = reverse('review-list')
         self.login_test_user(self.customer_user_1)
         response = self.client.post(
             url, data={'business_user': 2, 'description': 'Schön'})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    def test_create_review_401(self):
+    def test_create_401(self):
         url = reverse('review-list')
         self.client.logout()
         response = self.client.post(
             url, data={'business_user': 2, 'rating': 4, 'description': 'Schön'})
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_create_review_no_customer(self):
+    def test_create_no_customer_403(self):
         url = reverse('review-list')
         self.login_test_user(self.business_user_1)
         response = self.client.post(
