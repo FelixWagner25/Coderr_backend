@@ -90,3 +90,32 @@ class ReviewTest(APITestCase):
         expected_data = ReviewUpdateSerializer(self.review_1).data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.keys(), expected_data.keys())
+
+    def test_update_invalid_data_400(self):
+        url = reverse('review-detail', kwargs={'id': 1})
+        self.login_test_user(self.customer_user_1)
+        response = self.client.patch(
+            url, data={'rating': 6, 'description': 'Update: Schön'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_401(self):
+        self.client.logout()
+        url = reverse('review-detail', kwargs={'id': 1})
+        response = self.client.patch(
+            url, data={'rating': 4, 'description': 'Update: Schön'})
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_update_403(self):
+        url = reverse('review-detail', kwargs={'id': 1})
+        self.login_test_user(self.customer_user_2)
+        response = self.client.patch(
+            url, data={'rating': 4, 'description': 'Update: Schön'})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_update_404(self):
+        not_found_id = 1024
+        url = reverse('review-detail', kwargs={'id': not_found_id})
+        self.login_test_user(self.customer_user_2)
+        response = self.client.patch(
+            url, data={'rating': 4, 'description': 'Update: Schön'})
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
