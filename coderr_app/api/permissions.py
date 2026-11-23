@@ -1,11 +1,6 @@
 from rest_framework import permissions
 
 
-class DenyAll(permissions.BasePermission):
-    def has_permission(self, request, view):
-        False
-
-
 class IsUserTypeCustomer(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.type == 'customer'
