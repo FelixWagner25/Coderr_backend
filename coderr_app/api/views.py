@@ -68,8 +68,8 @@ class OrderCompletedCountView(generics.ListAPIView):
         return Response({'completed_order_count': completed_order_count})
 
 
-# class ReviewViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
+    lookup_url_kwarg = 'id'
 
     def get_queryset(self):
         queryset = Review.objects.all()
