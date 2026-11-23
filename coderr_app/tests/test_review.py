@@ -45,6 +45,27 @@ class ReviewTest(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_list_filter_business_user_200(self):
+        url = reverse(
+            'review-list')
+        self.login_test_user(self.customer_user_1)
+        response = self.client.get(
+            url, {'business_user_id': self.business_user_1.id})
+        expected_data = [ReviewListCreateSerializer(
+            self.review_1).data, ReviewListCreateSerializer(self.review_3).data]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, expected_data)
+
+    def test_list_filter_business_user_and_reviewer_200(self):
+        url = reverse(
+            'review-list')
+        self.login_test_user(self.customer_user_1)
+        response = self.client.get(
+            url, {'business_user_id': self.business_user_1.id, 'reviewer_id': self.customer_user_2.id})
+        expected_data = [ReviewListCreateSerializer(self.review_3).data]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, expected_data)
+
     def test_create_201(self):
         url = reverse('review-list')
         self.login_test_user(self.customer_user_1)
