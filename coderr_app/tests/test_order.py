@@ -179,3 +179,11 @@ class OrderTest(APITestCase):
         self.login_test_business_user()
         respone = self.client.get(url)
         self.assertEqual(respone.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_retrieve(self):
+        url = reverse(
+            'order-detail', kwargs={'id': 1023})
+        self.login_test_business_user()
+        response = self.client.get(url)
+        self.assertEqual(response.status_code,
+                         status.HTTP_405_METHOD_NOT_ALLOWED)

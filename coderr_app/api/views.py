@@ -1,14 +1,13 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from coderr_app.models import OfferDetail, Order, User
-from rest_framework import generics
-from rest_framework import viewsets
+from rest_framework import generics, mixins, viewsets
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from ..models import Review
-from .serializers import OrderCreateSerializer, OrderUpdateSerializer, OrderListSerializer, ReviewSerializer
-from .permissions import DenyAll, IsOrderBusinessUser, IsReviewer, IsUserTypeCustomer, IsUserTypeBusinessUser
+from .serializers import OrderCreateSerializer, OrderUpdateSerializer, OrderListSerializer, ReviewListCreateSerializer, ReviewUpdateSerializer
+from .permissions import IsOrderBusinessUser, IsReviewer, IsUserTypeCustomer, IsUserTypeBusinessUser
 
 
 class OrderListCreateView(generics.ListCreateAPIView):
@@ -35,7 +34,7 @@ class OrderListCreateView(generics.ListCreateAPIView):
         elif self.request.method == 'POST':
             permission_classes = [IsAuthenticated, IsUserTypeCustomer]
         else:
-            permission_classes = [DenyAll]
+            permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
 
 
@@ -69,8 +68,8 @@ class OrderCompletedCountView(generics.ListAPIView):
         return Response({'completed_order_count': completed_order_count})
 
 
-class ReviewViewSet(viewsets.ModelViewSet):
-    serializer_class = ReviewSerializer
+# class ReviewViewSet(viewsets.ModelViewSet):
+class ReviewViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
 
     def get_queryset(self):
         queryset = Review.objects.all()
@@ -86,13 +85,21 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
         return queryset
 
+    def get_serializer_class(self):
+        if self.action in ['list', 'create']:
+            return ReviewListCreateSerializer
+        elif self.action in ['update', 'partial_update']:
+            return ReviewUpdateSerializer
+        else:
+            return None
+
     def get_permissions(self):
-        if self.action in ['list', 'retrieve']:
+        if self.action == 'list':
             permission_classes = [IsAuthenticated]
         elif self.action == 'create':
             permission_classes = [IsAuthenticated, IsUserTypeCustomer]
         elif self.action in ['update', 'partial_update', 'destroy']:
             permission_classes = [IsAuthenticated, IsReviewer]
         else:
-            permission_classes = [DenyAll]
+            permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]

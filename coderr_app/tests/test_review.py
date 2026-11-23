@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 from rest_framework.authtoken.models import Token
 from ..models import Review, User
-from ..api.serializers import ReviewSerializer
+from ..api.serializers import ReviewListCreateSerializer
 
 
 class ReviewTest(APITestCase):
@@ -34,8 +34,8 @@ class ReviewTest(APITestCase):
         url = reverse('review-list')
         self.login_test_user(self.customer_user_1)
         response = self.client.get(url)
-        expected_data = [ReviewSerializer(self.review_1).data, ReviewSerializer(
-            self.review_2).data, ReviewSerializer(self.review_3).data]
+        expected_data = [ReviewListCreateSerializer(self.review_1).data, ReviewListCreateSerializer(
+            self.review_2).data, ReviewListCreateSerializer(self.review_3).data]
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected_data)
 
@@ -50,7 +50,7 @@ class ReviewTest(APITestCase):
         self.login_test_user(self.customer_user_1)
         response = self.client.post(
             url, data={'business_user': 2, 'rating': 4, 'description': 'Schön'})
-        expected_data = ReviewSerializer(self.review_1).data
+        expected_data = ReviewListCreateSerializer(self.review_1).data
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data.keys(), expected_data.keys())
 
@@ -74,3 +74,10 @@ class ReviewTest(APITestCase):
         response = self.client.post(
             url, data={'business_user': 4, 'rating': 4, 'description': 'Schön'})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_retrieve_405(self):
+        url = reverse('review-detail', kwargs={'pk': self.review_1.id})
+        self.login_test_user(self.customer_user_1)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code,
+                         status.HTTP_405_METHOD_NOT_ALLOWED)

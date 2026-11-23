@@ -35,7 +35,7 @@ class OrderUpdateSerializer(serializers.ModelSerializer):
                             'price', 'features', 'offer_type', 'created_at', 'updated_at']
 
 
-class ReviewSerializer(serializers.ModelSerializer):
+class ReviewListCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
@@ -45,3 +45,13 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     # Check for valid buisness_user_id and if unvalid throw 400
     # Check whether customer already reviewed business, if yes throw 403
+
+
+class ReviewUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Review
+        fields = ['id', 'business_user', 'reviewer', 'rating',
+                  'description', 'created_at', 'updated_at']
+        read_only_fields = ['business_user',
+                            'reviewer', 'created_at', 'updated_at']
