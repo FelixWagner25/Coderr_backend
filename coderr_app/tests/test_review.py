@@ -97,7 +97,7 @@ class ReviewTest(APITestCase):
         url = reverse('review-list')
         self.login_test_user(self.customer_user_1)
         response = self.client.post(
-            url, data={'business_user': 2, 'rating': 4, 'description': 'Schön'})
+            url, data={'business_user': self.business_user_2.id, 'rating': 4, 'description': 'Schön'})
         expected_data = ReviewListCreateSerializer(self.review_1).data
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data.keys(), expected_data.keys())
@@ -106,21 +106,37 @@ class ReviewTest(APITestCase):
         url = reverse('review-list')
         self.login_test_user(self.customer_user_1)
         response = self.client.post(
-            url, data={'business_user': 2, 'description': 'Schön'})
+            url, data={'business_user': self.business_user_2.id, 'description': 'Schön'})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_invalid_business_user_400(self):
+        url = reverse('review-list')
+        self.login_test_user(self.customer_user_1)
+        response = self.client.post(
+            url, data={'business_user': self.customer_user_2.id, 'rating': 4, 'description': 'Schön'})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_doubled_review_400(self):
+        url = reverse('review-list')
+        self.login_test_user(self.customer_user_1)
+        response_1 = self.client.post(
+            url, data={'business_user': self.business_user_2.id, 'rating': 4, 'description': 'Schön'})
+        response_2 = self.client.post(
+            url, data={'business_user': self.business_user_2.id, 'rating': 4, 'description': 'Schön'})
+        self.assertEqual(response_2.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_401(self):
         url = reverse('review-list')
         self.client.logout()
         response = self.client.post(
-            url, data={'business_user': 2, 'rating': 4, 'description': 'Schön'})
+            url, data={'business_user': self.business_user_2.id, 'rating': 4, 'description': 'Schön'})
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_create_no_customer_403(self):
         url = reverse('review-list')
         self.login_test_user(self.business_user_1)
         response = self.client.post(
-            url, data={'business_user': 4, 'rating': 4, 'description': 'Schön'})
+            url, data={'business_user': self.customer_user_2.id, 'rating': 4, 'description': 'Schön'})
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_retrieve_405(self):

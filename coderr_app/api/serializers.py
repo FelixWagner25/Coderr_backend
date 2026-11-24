@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from coderr_app.models import Order, Review
+from coderr_app.models import Order, Review, User
 
 
 class OrderListSerializer(serializers.ModelSerializer):
@@ -43,8 +43,19 @@ class ReviewListCreateSerializer(serializers.ModelSerializer):
                   'description', 'created_at', 'updated_at']
         read_only_fields = ['reviewer', 'created_at', 'updated_at']
 
-    # Check for valid buisness_user_id and if unvalid throw 400
-    # Check whether customer already reviewed business, if yes throw 403
+    def validate(self, data):
+        reviewer = self.context['request'].user
+        business_user = data['business_user']
+
+        if business_user.type != User.UserType.BUSINESS:
+            raise serializers.ValidationError(
+                {'business_user': 'User is no business user.'})
+
+        if Review.objects.filter(reviewer=reviewer, business_user=business_user).exists():
+            raise serializers.ValidationError(
+                'You already reviewed this business.')
+
+        return data
 
 
 class ReviewUpdateSerializer(serializers.ModelSerializer):

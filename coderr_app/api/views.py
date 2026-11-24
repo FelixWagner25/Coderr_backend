@@ -106,3 +106,6 @@ class ReviewViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Creat
         else:
             permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
+
+    def perform_create(self, serializer):
+        serializer.save(reviewer=self.request.user)
