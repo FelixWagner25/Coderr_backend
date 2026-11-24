@@ -3,11 +3,11 @@ from django.shortcuts import get_object_or_404
 from coderr_app.models import OfferDetail, Order, User
 from rest_framework import filters, generics, mixins, viewsets
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from ..models import Review
 from .serializers import OrderCreateSerializer, OrderUpdateSerializer, OrderListSerializer, ReviewListCreateSerializer, ReviewUpdateSerializer
-from .permissions import IsOrderBusinessUser, IsReviewer, IsUserTypeCustomer, IsUserTypeBusinessUser
+from .permissions import IsOfferCreator, IsOrderBusinessUser, IsReviewer, IsUserTypeCustomer, IsUserTypeBusinessUser
 
 
 class OrderListCreateView(generics.ListCreateAPIView):
@@ -109,3 +109,23 @@ class ReviewViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Creat
 
     def perform_create(self, serializer):
         serializer.save(reviewer=self.request.user)
+
+
+class OfferViewSet(viewsets.ModelViewSet):
+    lookup_url_kwarg = 'id'
+
+    def get_permissions(self):
+        if self.action == 'list':
+            permission_classes = [AllowAny]
+        elif self.action == 'retrieve':
+            permission_classes = [IsAuthenticated]
+        elif self.action == 'create':
+            permission_classes = [IsAuthenticated, IsUserTypeBusinessUser]
+        elif self.action in ['update', 'partial_update', 'destroy']:
+            permission_classes = [IsAuthenticated, IsOfferCreator]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

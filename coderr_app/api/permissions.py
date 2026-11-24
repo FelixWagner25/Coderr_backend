@@ -19,3 +19,8 @@ class IsOrderBusinessUser(permissions.BasePermission):
 class IsReviewer(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return request.user == obj.reviewer
+
+
+class IsOfferCreator(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return request.user == obj.user
