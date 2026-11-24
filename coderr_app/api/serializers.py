@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from coderr_app.models import Order, Review, User
+from coderr_app.models import Offer, OfferDetail, Order, Review, User
 
 
 class OrderListSerializer(serializers.ModelSerializer):
@@ -66,3 +66,36 @@ class ReviewUpdateSerializer(serializers.ModelSerializer):
                   'description', 'created_at', 'updated_at']
         read_only_fields = ['business_user',
                             'reviewer', 'created_at', 'updated_at']
+
+
+class OfferListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Offer
+
+
+class OfferCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Offer
+        fields = ['id', 'title', 'image', 'description', 'details']
+
+
+class OfferRetrieveSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Offer
+
+
+class OfferUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Offer
+
+
+class OfferDetailSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = OfferDetail
+        fields = ['id', 'title', 'revisions',
+                  'delivery_time_in_days', 'price', 'features', 'offer_type']

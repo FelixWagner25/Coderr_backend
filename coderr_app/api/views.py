@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from ..models import Review
-from .serializers import OrderCreateSerializer, OrderUpdateSerializer, OrderListSerializer, ReviewListCreateSerializer, ReviewUpdateSerializer
+from .serializers import OfferCreateSerializer, OfferListSerializer, OfferRetrieveSerializer, OfferUpdateSerializer, OrderCreateSerializer, OrderUpdateSerializer, OrderListSerializer, ReviewListCreateSerializer, ReviewUpdateSerializer
 from .permissions import IsOfferCreator, IsOrderBusinessUser, IsReviewer, IsUserTypeCustomer, IsUserTypeBusinessUser
 
 
@@ -114,6 +114,18 @@ class ReviewViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Creat
 class OfferViewSet(viewsets.ModelViewSet):
     lookup_url_kwarg = 'id'
 
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return OfferListSerializer
+        elif self.action == 'retrieve':
+            return OfferRetrieveSerializer
+        elif self.action == 'create':
+            return OfferCreateSerializer
+        elif self.action in ['update', 'partial_update']:
+            return OfferUpdateSerializer
+        else:
+            return None
+
     def get_permissions(self):
         if self.action == 'list':
             permission_classes = [AllowAny]
@@ -129,3 +141,7 @@ class OfferViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class OfferDetailView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
