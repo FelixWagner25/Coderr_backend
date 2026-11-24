@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from ..models import Review
-from .serializers import OfferCreateSerializer, OfferListSerializer, OfferRetrieveSerializer, OfferUpdateSerializer, OrderCreateSerializer, OrderUpdateSerializer, OrderListSerializer, ReviewListCreateSerializer, ReviewUpdateSerializer
+from .serializers import OfferCreateSerializer, OfferDetailSerializer, OfferListSerializer, OfferRetrieveSerializer, OfferUpdateSerializer, OrderCreateSerializer, OrderUpdateSerializer, OrderListSerializer, ReviewListCreateSerializer, ReviewUpdateSerializer
 from .permissions import IsOfferCreator, IsOrderBusinessUser, IsReviewer, IsUserTypeCustomer, IsUserTypeBusinessUser
 
 
@@ -144,4 +144,7 @@ class OfferViewSet(viewsets.ModelViewSet):
 
 
 class OfferDetailView(generics.RetrieveAPIView):
+    lookup_url_kwarg = 'id'
+    queryset = OfferDetail.objects.all()
+    serializer_class = OfferDetailSerializer
     permission_classes = [IsAuthenticated]
