@@ -18,6 +18,6 @@ urlpatterns = [
          name='business-profile-list'),
     path('profiles/customer/', CustomerProfileView.as_view(),
          name='customer-profile-list'),
-    path('profile/', ProfileDetailView.as_view(), name='profile-detail'),
+    path('profile/<int:pk>/', ProfileDetailView.as_view(), name='profile-detail'),
     path('', include(router.urls)),
 ]

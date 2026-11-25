@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 from rest_framework.authtoken.models import Token
 from ..models import BusinessUserProfile, CustomerProfile, FileUpload, User
-from ..api.serializers import BusinessProfileSerializer, CustomerProfileSerializer
+from ..api.serializers import BusinessProfileSerializer, CustomerProfileSerializer, ProfileDetailSerializer
 
 
 class ProfileTest(APITestCase):
@@ -62,3 +62,21 @@ class ProfileTest(APITestCase):
         url = reverse('customer-profile-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_retrieve_busniness_200(self):
+        url = reverse('profile-detail',
+                      kwargs={'pk': self.business_user_1.id})
+        self.login_test_user(self.business_user_1)
+        response = self.client.get(url)
+        expected_data = ProfileDetailSerializer(self.business_user_1).data
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, expected_data)
+
+    def test_retrieve_customer_200(self):
+        url = reverse('profile-detail',
+                      kwargs={'pk': self.customer_user_1.id})
+        self.login_test_user(self.business_user_1)
+        response = self.client.get(url)
+        expected_data = ProfileDetailSerializer(self.customer_user_1).data
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, expected_data)

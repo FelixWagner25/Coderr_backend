@@ -162,15 +162,14 @@ class CustomerProfileView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
 
-class ProfileDetailView(generics.GenericAPIView, mixins.RetrieveModelMixin, mixins.UpdateModelMixin):
-    lookup_url_kwarg = 'id'
+class ProfileDetailView(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = ProfileDetailSerializer
 
     def get_permissions(self):
-        if self.method == 'GET':
+        if self.request.method == 'GET':
             permission_classes = [IsAuthenticated]
-        elif self.method == 'PATCH':
+        elif self.request.method in ['PUT', 'PATCH']:
             permission_classes = [IsAuthenticated, IsObjectCreator]
         else:
             permission_classes = [IsAuthenticated]

@@ -141,8 +141,36 @@ class CustomerProfileSerializer(serializers.ModelSerializer):
 
 
 class ProfileDetailSerializer(serializers.ModelSerializer):
+    location = serializers.SerializerMethodField()
+    tel = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
+    working_hours = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'location',
-                  'tel', 'description', 'working_hours', 'email']
+                  'tel', 'description', 'working_hours', 'type', 'email']
+
+    def get_location(self, obj):
+        if obj.type == User.UserType.BUSINESS:
+            return obj.business_profile.location
+        else:
+            return ''
+
+    def get_tel(self, obj):
+        if obj.type == User.UserType.BUSINESS:
+            return obj.business_profile.tel
+        else:
+            ''
+
+    def get_description(self, obj):
+        if obj.type == User.UserType.BUSINESS:
+            return obj.business_profile.description
+        else:
+            ''
+
+    def get_working_hours(self, obj):
+        if obj.type == User.UserType.BUSINESS:
+            return obj.business_profile.working_hours
+        else:
+            ''
