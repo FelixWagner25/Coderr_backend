@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from coderr_app.models import Offer, OfferDetail, Order, Review, User
+from coderr_app.models import BusinessUserProfile, CustomerProfile, Offer, OfferDetail, Order, Review, User
 
 
 class OrderListSerializer(serializers.ModelSerializer):
@@ -82,9 +82,19 @@ class OfferCreateSerializer(serializers.ModelSerializer):
 
 
 class OfferRetrieveSerializer(serializers.ModelSerializer):
+    min_price = serializers.SerializerMethodField()
+    min_delivery_time = serializers.SerializerMethodField()
 
     class Meta:
         model = Offer
+        fields = ['id', 'user', 'title', 'image', 'description', 'created_at',
+                  'updated_at', 'details', 'min_price', 'min_delivery_time']
+
+    def get_min_price(self):
+        pass
+
+    def get_min_delivery_time(self):
+        pass
 
 
 class OfferUpdateSerializer(serializers.ModelSerializer):
@@ -101,3 +111,27 @@ class OfferDetailSerializer(serializers.ModelSerializer):
                   'delivery_time_in_days', 'price', 'features', 'offer_type']
         read_only_fields = ['title', 'revisions',
                             'delivery_time_in_days', 'price', 'features', 'offer_type']
+
+
+class BusinessProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = BusinessUserProfile
+        fields = ['user', 'username', 'first_name', 'last_name', 'file',
+                  'location', 'tel', 'description', 'working_hours', 'type']
+
+
+class CustomerProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CustomerProfile
+        fields = ['user', 'username', 'first_name',
+                  'last_name', 'file', 'uploaded_at', 'type']
+
+
+class ProfileDetailSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'location',
+                  'tel', 'description', 'working_hours', 'email']

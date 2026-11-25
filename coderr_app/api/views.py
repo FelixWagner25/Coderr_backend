@@ -5,9 +5,9 @@ from rest_framework import filters, generics, mixins, viewsets
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from ..models import Review
-from .serializers import OfferCreateSerializer, OfferDetailSerializer, OfferListSerializer, OfferRetrieveSerializer, OfferUpdateSerializer, OrderCreateSerializer, OrderUpdateSerializer, OrderListSerializer, ReviewListCreateSerializer, ReviewUpdateSerializer
-from .permissions import IsOfferCreator, IsOrderBusinessUser, IsReviewer, IsUserTypeCustomer, IsUserTypeBusinessUser
+from ..models import BusinessUserProfile, CustomerProfile, Review
+from .serializers import BusinessProfileSerializer, CustomerProfileSerializer, OfferCreateSerializer, OfferDetailSerializer, OfferListSerializer, OfferRetrieveSerializer, OfferUpdateSerializer, OrderCreateSerializer, OrderUpdateSerializer, OrderListSerializer, ProfileDetailSerializer, ReviewListCreateSerializer, ReviewUpdateSerializer
+from .permissions import IsObjectCreator, IsOrderBusinessUser, IsReviewer, IsUserTypeCustomer, IsUserTypeBusinessUser
 
 
 class OrderListCreateView(generics.ListCreateAPIView):
@@ -134,7 +134,7 @@ class OfferViewSet(viewsets.ModelViewSet):
         elif self.action == 'create':
             permission_classes = [IsAuthenticated, IsUserTypeBusinessUser]
         elif self.action in ['update', 'partial_update', 'destroy']:
-            permission_classes = [IsAuthenticated, IsOfferCreator]
+            permission_classes = [IsAuthenticated, IsObjectCreator]
         else:
             permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
@@ -148,3 +148,29 @@ class OfferDetailView(generics.RetrieveAPIView):
     queryset = OfferDetail.objects.all()
     serializer_class = OfferDetailSerializer
     permission_classes = [IsAuthenticated]
+
+
+class BusinessProfileView(generics.ListAPIView):
+    queryset = BusinessUserProfile.objects.all()
+    serializer_class = BusinessProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class CustomerProfileView(generics.ListAPIView):
+    queryset = CustomerProfile.objects.all()
+    serializer_class = CustomerProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class ProfileDetailView(generics.GenericAPIView, mixins.RetrieveModelMixin, mixins.UpdateModelMixin):
+    queryset = User.objects.all()
+    serializer_class = ProfileDetailSerializer
+
+    def get_permissions(self):
+        if self.method == 'GET':
+            permission_classes = [IsAuthenticated]
+        elif self.method == 'PATCH':
+            permission_classes = [IsAuthenticated, IsObjectCreator]
+        else:
+            permission_classes = [IsAuthenticated]
+        return [permission() for permission in permission_classes]

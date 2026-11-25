@@ -21,6 +21,6 @@ class IsReviewer(permissions.BasePermission):
         return request.user == obj.reviewer
 
 
-class IsOfferCreator(permissions.BasePermission):
+class IsObjectCreator(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return request.user == obj.user
