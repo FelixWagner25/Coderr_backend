@@ -80,3 +80,18 @@ class ProfileTest(APITestCase):
         expected_data = ProfileDetailSerializer(self.customer_user_1).data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected_data)
+
+    def test_retrieve_business_401(self):
+        self.client.logout()
+        url = reverse('profile-detail',
+                      kwargs={'pk': self.business_user_1.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_retrieve_404(self):
+        not_found_id = 1023
+        url = reverse('profile-detail',
+                      kwargs={'pk': not_found_id})
+        self.login_test_user(self.business_user_1)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
