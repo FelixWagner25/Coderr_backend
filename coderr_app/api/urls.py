@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import BusinessProfileView, CustomerProfileView, OfferDetailView, OfferViewSet, OrderCompletedCountView, OrderCountView, OrderDetailView, OrderListCreateView, ReviewViewSet
+from .views import BusinessProfileView, CustomerProfileView, OfferDetailView, OfferViewSet, OrderCompletedCountView, OrderCountView, OrderDetailView, OrderListCreateView, ProfileDetailView, ReviewViewSet
 
 router = DefaultRouter()
 router.register(r'reviews', ReviewViewSet, basename='review')
@@ -18,5 +18,6 @@ urlpatterns = [
          name='business-profile-list'),
     path('profiles/customer/', CustomerProfileView.as_view(),
          name='customer-profile-list'),
+    path('profile/', ProfileDetailView.as_view(), name='profile-detail'),
     path('', include(router.urls)),
 ]

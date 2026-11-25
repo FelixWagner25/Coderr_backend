@@ -163,6 +163,7 @@ class CustomerProfileView(generics.ListAPIView):
 
 
 class ProfileDetailView(generics.GenericAPIView, mixins.RetrieveModelMixin, mixins.UpdateModelMixin):
+    lookup_url_kwarg = 'id'
     queryset = User.objects.all()
     serializer_class = ProfileDetailSerializer
 
