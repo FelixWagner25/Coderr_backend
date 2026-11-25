@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 from rest_framework.authtoken.models import Token
 from ..models import BusinessUserProfile, CustomerProfile, FileUpload, User
-from ..api.serializers import BusinessProfileSerializer
+from ..api.serializers import BusinessProfileSerializer, CustomerProfileSerializer
 
 
 class ProfileTest(APITestCase):
@@ -33,7 +33,7 @@ class ProfileTest(APITestCase):
         self.token, created = Token.objects.get_or_create(user=test_user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
 
-    def test_get_business_200(self):
+    def test_list_business_200(self):
         url = reverse('business-profile-list')
         self.login_test_user(self.customer_user_1)
         response = self.client.get(url)
@@ -41,3 +41,24 @@ class ProfileTest(APITestCase):
             self.business_user_profile_1).data, BusinessProfileSerializer(self.business_user_profile_2).data]
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected_data)
+
+    def test_list_business_401(self):
+        self.client.logout()
+        url = reverse('business-profile-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_list_customer_200(self):
+        url = reverse('customer-profile-list')
+        self.login_test_user(self.business_user_1)
+        response = self.client.get(url)
+        expected_data = [CustomerProfileSerializer(
+            self.customer_profile_1).data, CustomerProfileSerializer(self.customer_profile_2).data]
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, expected_data)
+
+    def test_list_customer_401(self):
+        self.client.logout()
+        url = reverse('customer-profile-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
