@@ -7,7 +7,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from ..models import BusinessUserProfile, CustomerProfile, Review
 from .serializers import BusinessProfileSerializer, CustomerProfileSerializer, OfferCreateSerializer, OfferDetailSerializer, OfferListSerializer, OfferRetrieveSerializer, OfferUpdateSerializer, OrderCreateSerializer, OrderUpdateSerializer, OrderListSerializer, ProfileDetailSerializer, ReviewListCreateSerializer, ReviewUpdateSerializer
-from .permissions import IsObjectCreator, IsOrderBusinessUser, IsReviewer, IsUserTypeCustomer, IsUserTypeBusinessUser
+from .permissions import IsObjectCreator, IsOrderBusinessUser, IsProfileOwner, IsReviewer, IsUserTypeCustomer, IsUserTypeBusinessUser
 
 
 class OrderListCreateView(generics.ListCreateAPIView):
@@ -162,7 +162,7 @@ class CustomerProfileView(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
 
 
-class ProfileDetailView(generics.RetrieveAPIView):
+class ProfileDetailView(generics.RetrieveUpdateAPIView):
     queryset = User.objects.all()
     serializer_class = ProfileDetailSerializer
 
@@ -170,7 +170,7 @@ class ProfileDetailView(generics.RetrieveAPIView):
         if self.request.method == 'GET':
             permission_classes = [IsAuthenticated]
         elif self.request.method in ['PUT', 'PATCH']:
-            permission_classes = [IsAuthenticated, IsObjectCreator]
+            permission_classes = [IsAuthenticated, IsProfileOwner]
         else:
             permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]

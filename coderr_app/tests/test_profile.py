@@ -97,3 +97,14 @@ class ProfileTest(APITestCase):
         self.login_test_user(self.business_user_1)
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_updated_business_200(self):
+        url = reverse('profile-detail',
+                      kwargs={'pk': self.business_user_1.id})
+        self.login_test_user(self.business_user_1)
+        response = self.client.patch(
+            url, data={'first_name': 'Max', 'last_name': 'Mustermann'})
+        expected_data = ProfileDetailSerializer(self.business_user_1).data
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.keys(), expected_data.keys())
+        self.assertEqual(response.data['first_name'], 'Max')
