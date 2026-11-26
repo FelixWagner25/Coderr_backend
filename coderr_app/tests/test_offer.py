@@ -38,3 +38,16 @@ class OfferTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected_data)
         self.assertEqual(response.data['min_price'], 100.00)
+
+    def test_retrieve_401(self):
+        self.client.logout()
+        url = reverse('offer-detail', kwargs={'id': self.offer_1.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_retrieve_404(self):
+        not_found_id = 1023
+        url = reverse('offer-detail', kwargs={'id': not_found_id})
+        self.login_test_user(self.customer_user_1)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
