@@ -5,7 +5,7 @@ from rest_framework import filters, generics, mixins, viewsets
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from ..models import BusinessUserProfile, CustomerProfile, Review
+from ..models import BusinessUserProfile, CustomerProfile, Offer, Review
 from .serializers import BusinessProfileSerializer, CustomerProfileSerializer, OfferCreateSerializer, OfferDetailSerializer, OfferListSerializer, OfferRetrieveSerializer, OfferUpdateSerializer, OrderCreateSerializer, OrderUpdateSerializer, OrderListSerializer, ProfileDetailSerializer, ReviewListCreateSerializer, ReviewUpdateSerializer
 from .permissions import IsObjectCreator, IsOrderBusinessUser, IsProfileOwner, IsReviewer, IsUserTypeCustomer, IsUserTypeBusinessUser
 
@@ -112,6 +112,7 @@ class ReviewViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Creat
 
 
 class OfferViewSet(viewsets.ModelViewSet):
+    queryset = Offer.objects.all()
     lookup_url_kwarg = 'id'
 
     def get_serializer_class(self):

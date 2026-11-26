@@ -84,7 +84,8 @@ class OfferDetail(models.Model):
     price = models.DecimalField(decimal_places=2, max_digits=11)
     features = models.JSONField(default=list)
     offer_type = models.CharField(max_length=8, choices=OfferType.choices)
-    offer = models.ForeignKey(Offer, on_delete=models.CASCADE)
+    offer = models.ForeignKey(
+        Offer, on_delete=models.CASCADE, related_name='offerdetails')
 
     def __str__(self):
         return f'{self.title}'

@@ -1,3 +1,4 @@
+from django.db.models import Min
 from rest_framework import serializers
 from coderr_app.models import BusinessUserProfile, CustomerProfile, Offer, OfferDetail, Order, Review, User
 
@@ -81,7 +82,18 @@ class OfferCreateSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'image', 'description', 'details']
 
 
+class OfferDetailLinkSerializer(serializers.ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name='offerdetail', lookup_url_kwarg='id')
+
+    class Meta:
+        model = OfferDetail
+        fields = ['id', 'url']
+
+
 class OfferRetrieveSerializer(serializers.ModelSerializer):
+    details = OfferDetailLinkSerializer(
+        source='offerdetails', many=True, read_only=True)
     min_price = serializers.SerializerMethodField()
     min_delivery_time = serializers.SerializerMethodField()
 
@@ -90,11 +102,11 @@ class OfferRetrieveSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'title', 'image', 'description', 'created_at',
                   'updated_at', 'details', 'min_price', 'min_delivery_time']
 
-    def get_min_price(self):
-        pass
+    def get_min_price(self, obj):
+        return obj.offerdetails.aggregate(min=Min('price'))['min']
 
-    def get_min_delivery_time(self):
-        pass
+    def get_min_delivery_time(self, obj):
+        return obj.offerdetails.aggregate(min=Min('delivery_time_in_days'))['min']
 
 
 class OfferUpdateSerializer(serializers.ModelSerializer):
