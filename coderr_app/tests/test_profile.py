@@ -71,6 +71,7 @@ class ProfileTest(APITestCase):
         expected_data = ProfileDetailSerializer(self.business_user_1).data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected_data)
+        self.assertEqual(response.data['file'], None)
 
     def test_retrieve_customer_200(self):
         url = reverse('profile-detail',
@@ -80,6 +81,7 @@ class ProfileTest(APITestCase):
         expected_data = ProfileDetailSerializer(self.customer_user_1).data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected_data)
+        self.assertEqual(response.data['file'], self.image.file.url)
 
     def test_retrieve_business_401(self):
         self.client.logout()

@@ -141,15 +141,19 @@ class CustomerProfileSerializer(serializers.ModelSerializer):
 
 
 class ProfileDetailSerializer(serializers.ModelSerializer):
+    user = serializers.IntegerField(source='id')
+    file = serializers.SerializerMethodField()
     location = serializers.SerializerMethodField()
     tel = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
     working_hours = serializers.SerializerMethodField()
+    created_at = serializers.DateTimeField(source='date_joined')
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'location',
-                  'tel', 'description', 'working_hours', 'type', 'email']
+        fields = ['user', 'username', 'first_name', 'last_name', 'file', 'location',
+                  'tel', 'description', 'working_hours', 'type', 'email', 'created_at']
+        read_only_fields = ['user', 'username', 'file', 'type', 'created_at']
 
     def get_location(self, obj):
         if obj.type == User.UserType.BUSINESS:
@@ -174,3 +178,16 @@ class ProfileDetailSerializer(serializers.ModelSerializer):
             return obj.business_profile.working_hours
         else:
             ''
+
+    def get_file(self, obj):
+        if obj.type == User.UserType.BUSINESS:
+            file_obj = obj.business_profile.file
+        elif obj.type == User.UserType.CUSTOMER:
+            file_obj = obj.customer_profile.file
+        else:
+            return None
+
+        if file_obj and file_obj.file:
+            return file_obj.file.url
+
+        return None
