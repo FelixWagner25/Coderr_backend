@@ -98,7 +98,7 @@ class ProfileTest(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_updated_business_200(self):
+    def test_update_business_200(self):
         url = reverse('profile-detail',
                       kwargs={'pk': self.business_user_1.id})
         self.login_test_user(self.business_user_1)
@@ -108,3 +108,39 @@ class ProfileTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.keys(), expected_data.keys())
         self.assertEqual(response.data['first_name'], 'Max')
+
+    def test_update_customer_200(self):
+        url = reverse('profile-detail',
+                      kwargs={'pk': self.customer_user_1.id})
+        self.login_test_user(self.customer_user_1)
+        response = self.client.patch(
+            url, data={'first_name': 'Max', 'last_name': 'Mustermann'})
+        expected_data = ProfileDetailSerializer(self.customer_user_1).data
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data.keys(), expected_data.keys())
+        self.assertEqual(response.data['first_name'], 'Max')
+
+    def test_update_401(self):
+        self.client.logout()
+        url = reverse('profile-detail',
+                      kwargs={'pk': self.customer_user_1.id})
+        response = self.client.patch(
+            url, data={'first_name': 'Max', 'last_name': 'Mustermann'})
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_update_403(self):
+        url = reverse('profile-detail',
+                      kwargs={'pk': self.business_user_1.id})
+        self.login_test_user(self.customer_user_1)
+        response = self.client.patch(
+            url, data={'first_name': 'Max', 'last_name': 'Mustermann'})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_update_404(self):
+        not_found_id = 1023
+        url = reverse('profile-detail',
+                      kwargs={'pk': not_found_id})
+        self.login_test_user(self.customer_user_1)
+        response = self.client.patch(
+            url, data={'first_name': 'Max', 'last_name': 'Mustermann'})
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
