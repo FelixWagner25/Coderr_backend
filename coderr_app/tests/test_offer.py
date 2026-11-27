@@ -89,3 +89,29 @@ class OfferTest(APITestCase):
         self.login_test_user(self.business_user_1)
         response = self.client.patch(url, data={'title': 'Test Update Offer'})
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_destroy_204(self):
+        url = reverse('offer-detail', kwargs={'id': self.offer_1.id})
+        self.login_test_user(self.business_user_1)
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.data, None)
+
+    def test_destroy_401(self):
+        self.client.logout()
+        url = reverse('offer-detail', kwargs={'id': self.offer_1.id})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_destroy_403(self):
+        url = reverse('offer-detail', kwargs={'id': self.offer_1.id})
+        self.login_test_user(self.business_user_2)
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_update_404(self):
+        not_found_id = 1023
+        url = reverse('offer-detail', kwargs={'id': not_found_id})
+        self.login_test_user(self.business_user_1)
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
