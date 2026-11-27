@@ -109,20 +109,31 @@ class OfferRetrieveSerializer(serializers.ModelSerializer):
         return obj.offerdetails.aggregate(min=Min('delivery_time_in_days'))['min']
 
 
-class OfferUpdateSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Offer
-
-
 class OfferDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OfferDetail
         fields = ['id', 'title', 'revisions',
                   'delivery_time_in_days', 'price', 'features', 'offer_type']
-        read_only_fields = ['title', 'revisions',
-                            'delivery_time_in_days', 'price', 'features', 'offer_type']
+
+
+class OfferUpdateSerializer(serializers.ModelSerializer):
+    details = OfferDetailSerializer(
+        many=True, source='offerdetails', required=False)
+
+    class Meta:
+        model = Offer
+        fields = ['id', 'title', 'image', 'description', 'details']
+
+    def update(self, instance, validated_data):
+        details = validated_data.pop('offerdetails', [])
+        instance = super().update(instance, validated_data)
+
+        for detail in details:
+            OfferDetail.objects.update_or_create(
+                offer=instance, offer_type=detail['offer_type'], defaults=detail)
+
+        return instance
 
 
 class BusinessProfileSerializer(serializers.ModelSerializer):
