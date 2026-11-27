@@ -13,6 +13,8 @@ class OfferTest(APITestCase):
             username='testCustomer1', password='asdasd', type='customer')
         self.business_user_1 = User.objects.create_user(
             username='Test Business User 1', password='asdasd', type=User.UserType.BUSINESS)
+        self.business_user_2 = User.objects.create_user(
+            username='Test Business User 2', password='asdasd', type=User.UserType.BUSINESS)
         self.image = FileUpload.objects.create(file='uploads/testBild.png')
         self.offer_1 = Offer.objects.create(
             user=self.business_user_1, title='Test offer 1', image=self.image, description='Test offer 1 description')
@@ -68,3 +70,22 @@ class OfferTest(APITestCase):
         response = self.client.patch(url, data={'title': 'Test Update Offer', 'details': [
                                      {'title': 'Incomplete detail'}]})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_401(self):
+        self.client.logout()
+        url = reverse('offer-detail', kwargs={'id': self.offer_1.id})
+        response = self.client.patch(url, data={'title': 'Test Update Offer'})
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_update_403(self):
+        url = reverse('offer-detail', kwargs={'id': self.offer_1.id})
+        self.login_test_user(self.business_user_2)
+        response = self.client.patch(url, data={'title': 'Test Update Offer'})
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_update_404(self):
+        not_found_id = 1023
+        url = reverse('offer-detail', kwargs={'id': not_found_id})
+        self.login_test_user(self.business_user_1)
+        response = self.client.patch(url, data={'title': 'Test Update Offer'})
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
