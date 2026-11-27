@@ -1,15 +1,19 @@
 from django.db.models import Min
-from django.http import HttpResponseBadRequest
 from rest_framework import serializers
 from coderr_app.models import BusinessUserProfile, CustomerProfile, Offer, OfferDetail, Order, Review, User
 
 
+class OrderListResultSerializer(serializers.ModelSerializer):
+    pass
+
+
 class OrderListSerializer(serializers.ModelSerializer):
+
+    results = OrderListResultSerializer(many=True)
 
     class Meta:
         model = Order
-        fields = ['id', 'customer', 'business_user', 'title', 'revisions', 'delivery_time_in_days',
-                  'price', 'features', 'offer_type', 'status', 'created_at', 'updated_at']
+        fields = ['id', 'results']
 
 
 class OrderCreateSerializer(serializers.ModelSerializer):
@@ -76,13 +80,6 @@ class OfferListSerializer(serializers.ModelSerializer):
         model = Offer
 
 
-class OfferCreateSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Offer
-        fields = ['id', 'title', 'image', 'description', 'details']
-
-
 class OfferDetailLinkSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name='offerdetail', lookup_url_kwarg='id')
@@ -131,7 +128,7 @@ class OfferDetailSerializer(serializers.ModelSerializer):
         return data
 
 
-class OfferUpdateSerializer(serializers.ModelSerializer):
+class OfferCreateUpdateSerializer(serializers.ModelSerializer):
     details = OfferDetailSerializer(
         many=True, source='offerdetails', required=False)
 

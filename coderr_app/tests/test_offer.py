@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 from rest_framework.authtoken.models import Token
 from ..models import FileUpload, Offer, OfferDetail, User
-from ..api.serializers import OfferRetrieveSerializer, OfferUpdateSerializer
+from ..api.serializers import OfferRetrieveSerializer, OfferCreateUpdateSerializer
 
 
 class OfferTest(APITestCase):
@@ -58,7 +58,7 @@ class OfferTest(APITestCase):
         url = reverse('offer-detail', kwargs={'id': self.offer_1.id})
         self.login_test_user(self.business_user_1)
         response = self.client.patch(url, data={'title': 'Test Update Offer'})
-        expected_data = OfferUpdateSerializer(
+        expected_data = OfferCreateUpdateSerializer(
             self.offer_1, context={'request': response.renderer_context['request']}).data
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.keys(), expected_data.keys())

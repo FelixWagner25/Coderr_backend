@@ -6,7 +6,8 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from ..models import BusinessUserProfile, CustomerProfile, Offer, Review
-from .serializers import BusinessProfileSerializer, CustomerProfileSerializer, OfferCreateSerializer, OfferDetailSerializer, OfferListSerializer, OfferRetrieveSerializer, OfferUpdateSerializer, OrderCreateSerializer, OrderUpdateSerializer, OrderListSerializer, ProfileDetailSerializer, ReviewListCreateSerializer, ReviewUpdateSerializer
+from .serializers import BusinessProfileSerializer, CustomerProfileSerializer, OfferCreateUpdateSerializer, OfferDetailSerializer, OfferListSerializer, OfferRetrieveSerializer, OrderCreateSerializer, OrderUpdateSerializer, OrderListSerializer, ProfileDetailSerializer, ReviewListCreateSerializer, ReviewUpdateSerializer
+from .pagination import OfferListResultPagination
 from .permissions import IsObjectCreator, IsOrderBusinessUser, IsProfileOwner, IsReviewer, IsUserTypeCustomer, IsUserTypeBusinessUser
 
 
@@ -114,16 +115,15 @@ class ReviewViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Creat
 class OfferViewSet(viewsets.ModelViewSet):
     queryset = Offer.objects.all()
     lookup_url_kwarg = 'id'
+    pagination_class = OfferListResultPagination
 
     def get_serializer_class(self):
         if self.action == 'list':
             return OfferListSerializer
         elif self.action == 'retrieve':
             return OfferRetrieveSerializer
-        elif self.action == 'create':
-            return OfferCreateSerializer
-        elif self.action in ['update', 'partial_update']:
-            return OfferUpdateSerializer
+        elif self.action in ['create', 'update', 'partial_update']:
+            return OfferCreateUpdateSerializer
         else:
             return None
 
