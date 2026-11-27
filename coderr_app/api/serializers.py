@@ -1,4 +1,5 @@
 from django.db.models import Min
+from django.http import HttpResponseBadRequest
 from rest_framework import serializers
 from coderr_app.models import BusinessUserProfile, CustomerProfile, Offer, OfferDetail, Order, Review, User
 
@@ -115,6 +116,19 @@ class OfferDetailSerializer(serializers.ModelSerializer):
         model = OfferDetail
         fields = ['id', 'title', 'revisions',
                   'delivery_time_in_days', 'price', 'features', 'offer_type']
+
+    def validate(self, data):
+        required_fields = ['title', 'revisions',
+                           'delivery_time_in_days', 'price', 'features', 'offer_type']
+        errors = {}
+        for field in required_fields:
+            if field not in data:
+                errors[field] = 'This field is required'
+
+        if errors:
+            raise serializers.ValidationError(errors)
+
+        return data
 
 
 class OfferUpdateSerializer(serializers.ModelSerializer):
