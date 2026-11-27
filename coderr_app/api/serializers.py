@@ -225,3 +225,22 @@ class ProfileDetailSerializer(serializers.ModelSerializer):
             return file_obj.file.url
 
         return None
+
+
+class BaseInfoSerializer(serializers.Serializer):
+    review_count = serializers.SerializerMethodField()
+    average_rating = serializers.SerializerMethodField()
+    business_profile_count = serializers.SerializerMethodField()
+    offer_count = serializers.SerializerMethodField()
+
+    def get_review_count(self, obj):
+        pass
+
+    def get_average_rating(self, obj):
+        pass
+
+    def get_business_profile_count(self, obj):
+        pass
+
+    def get_offer_count(self, obj):
+        pass

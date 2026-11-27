@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from ..models import BusinessUserProfile, CustomerProfile, Offer, Review
-from .serializers import BusinessProfileSerializer, CustomerProfileSerializer, OfferCreateUpdateSerializer, OfferDetailSerializer, OfferListSerializer, OfferRetrieveSerializer, OrderCreateSerializer, OrderUpdateSerializer, OrderListSerializer, ProfileDetailSerializer, ReviewListCreateSerializer, ReviewUpdateSerializer
+from .serializers import BaseInfoSerializer, BusinessProfileSerializer, CustomerProfileSerializer, OfferCreateUpdateSerializer, OfferDetailSerializer, OfferListSerializer, OfferRetrieveSerializer, OrderCreateSerializer, OrderUpdateSerializer, OrderListSerializer, ProfileDetailSerializer, ReviewListCreateSerializer, ReviewUpdateSerializer
 from .pagination import OfferListResultPagination
 from .permissions import IsObjectCreator, IsOrderBusinessUser, IsProfileOwner, IsReviewer, IsUserTypeCustomer, IsUserTypeBusinessUser
 
@@ -175,3 +175,9 @@ class ProfileDetailView(generics.RetrieveUpdateAPIView):
         else:
             permission_classes = [IsAuthenticated]
         return [permission() for permission in permission_classes]
+
+
+class BaseInfoView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = BaseInfoSerializer
+    permission_classes = [AllowAny]
